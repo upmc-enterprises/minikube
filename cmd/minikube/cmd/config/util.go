@@ -110,7 +110,7 @@ func EnableOrDisableAddon(name string, val string) error {
 
 				cluster.CreateSecret(
 					"kube-system",
-					"awsecr-creds",
+					"registry-creds-ecr",
 					map[string]string{
 						"AWS_ACCESS_KEY_ID":     awsAccessID,
 						"AWS_SECRET_ACCESS_KEY": awsAccessKey,
@@ -127,11 +127,11 @@ func EnableOrDisableAddon(name string, val string) error {
 			enableGCR := AskForYesNoConfirmation("\nDo you want to enable Google Container Registry?", posResponses, negResponses)
 			if enableGCR {
 				fmt.Println("-- Enter applicatoin_default_credentials.json as base64 by running following command:")
-				gcrApplicationDefaultCredentials := AskForStaticValue("  base64 -w $HOME/.config/gcloud/application_default_credentials.json: ")
+				gcrApplicationDefaultCredentials := AskForStaticValue("  base64 -w 0 $HOME/.config/gcloud/application_default_credentials.json: ")
 
 				cluster.CreateSecret(
 					"kube-system",
-					"gcr-creds",
+					"registry-creds-gcr",
 					map[string]string{
 						"application_default_credentials.json": gcrApplicationDefaultCredentials,
 					},
@@ -145,8 +145,8 @@ func EnableOrDisableAddon(name string, val string) error {
 		}
 	} else {
 		// Cleanup existing secrets
-		cluster.DeleteSecret("kube-system", "awsecr-creds")
-		cluster.DeleteSecret("kube-system", "gcr-creds")
+		cluster.DeleteSecret("kube-system", "registry-creds-ecr")
+		cluster.DeleteSecret("kube-system", "registry-creds-gcr")
 	}
 
 	//TODO(r2d4): config package should not reference API, pull this out
